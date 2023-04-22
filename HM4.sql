@@ -717,29 +717,30 @@ INSERT INTO `likes` VALUES
 */
 
 USE vk;
-SELECT user_id, COUNT(*)
-AS community_id
-FROM users_communities
-GROUP BY user_id;
+SELECT CONCAT(firstname, ' ', lastname) AS user, COUNT(*)
+FROM users u
+JOIN users_communities uc ON u.id = uc.user_id
+GROUP BY u.id;
 
 /*
 2. Подсчитать количество пользователей в каждом сообществе.
 */
 
-SELECT community_id, COUNT(*)
-AS user_id
-FROM users_communities
-GROUP BY community_id;
+SELECT name AS community_name, COUNT(*)
+FROM communities c
+JOIN users_communities uc ON uc.community_id = c.id
+GROUP BY c.id;
 
 /*
 3. Пусть задан некоторый пользователь. Из всех пользователей соц. сети найдите человека, 
 который больше всех общался с выбранным пользователем (написал ему сообщений).
 */
-SELECT from_user_id, COUNT(*)
-AS to_user_id_COUNT
-FROM messages
+SELECT from_user_id, CONCAT(u.firstname, ' ', u.lastname) AS user, COUNT(*) AS to_user_id_COUNT
+FROM messages m
+JOIN users u ON u.id = m.from_user_id
 WHERE to_user_id = 1
 GROUP BY from_user_id
-ORDER BY to_user_id_COUNT DESC;
+ORDER BY to_user_id_COUNT DESC
+LIMIT 1;
 
 
